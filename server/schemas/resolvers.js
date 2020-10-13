@@ -42,13 +42,14 @@ const resolvers = {
         },
         saveBook: async (parent, { authors, title, bookId, description, image, link }, context) => {
             if (context.user) {
-                const updatedUser = await User.findOneAndUpdate(
+                const savedBook  = {title,bookId, description,image,link,authors};
+             await User.findOneAndUpdate(
                     { _id: context.user._id },
-                    { $push: { savedBooks: { title, bookId, description, image, link, authors } } },
+                    { $push: { savedBooks: savedBook } },
                     { new: true, runValidators: true }
-                ).populate('savedBooks');
+             );
 
-                return updatedUser;
+                return savedBook;
             }
             throw new AuthenticationError('You need to be logged in!');
 
