@@ -12,7 +12,15 @@ const SavedBooks = () => {
 
   const userData = data?.me || [];
 
-  const [removeBook, { error }] = useMutation(REMOVE_BOOK);
+  const [removeBook, { error }] = useMutation(REMOVE_BOOK,{
+    update(cache,{data:{removeBook}}){
+      const {me} = cache.readQuery({query:GET_ME});
+      cache.writeQuery({
+        query:GET_ME,
+        data: {...me,me:removeBook}
+      })
+    }
+  });
 
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
@@ -31,7 +39,6 @@ const SavedBooks = () => {
 
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
-      // pageReload();
     } catch (err) {
       console.error(err);
     }
